@@ -30,7 +30,7 @@ public class MainController {
             @PathVariable("id") UUID id,
             @RequestParam(value = "includeTickets", defaultValue = "false") boolean includeTickets
     ) {
-        return eventService.getEventById(id, includeTickets);
+        return eventService.getEvent(id, includeTickets);
     }
 
     @GetMapping("/events/{id}/tickets")

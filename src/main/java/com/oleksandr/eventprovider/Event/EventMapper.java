@@ -4,6 +4,7 @@ import com.oleksandr.eventprovider.Ticket.Ticket;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -101,5 +102,19 @@ public class EventMapper {
                         .map(this::mapToDto)
                         .filter(Objects::nonNull)
                         .toList();
+    }
+
+    public EventDTO mapToDtoWithoutTickets(Event event) {
+        if (event == null) throw new IllegalArgumentException("Event entity cannot be null");
+
+        return EventDTO.builder()
+                .id(event.getId())
+                .name(event.getName())
+                .description(event.getDescription())
+                .location(event.getLocation())
+                .imageURL(event.getImageURL())
+                .eventDate(event.getEventDate())
+                .tickets(new ArrayList<>())
+                .build();
     }
 }

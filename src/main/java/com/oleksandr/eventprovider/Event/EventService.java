@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface EventService {
 
-    EventDTO getEvent(UUID id);
+    EventDTO getEvent(UUID id, boolean includeTickets);
 
     List<TicketDTO> getTicketsByEvent(UUID id);
 
