@@ -15,6 +15,7 @@ public class TicketMapper {
         ticket.setId(dto.getId());
         ticket.setType(dto.getType());
         ticket.setPrice(dto.getPrice());
+        ticket.setPlace(dto.getPlace());
         ticket.setStatus(dto.getStatus() != null ? dto.getStatus() : TICKET_STATUS.AVAILABLE);
 
         // eventId нужно установить в сервисе через репозиторий Event, если dto.getEventId() != null
@@ -37,6 +38,7 @@ public class TicketMapper {
                 .id(ticket.getId())
                 .type(ticket.getType())
                 .price(ticket.getPrice())
+                .place(ticket.getPlace())
                 .status(ticket.getStatus())
                 .eventId(ticket.getEvent() != null ? ticket.getEvent().getId() : null)
                 .build();

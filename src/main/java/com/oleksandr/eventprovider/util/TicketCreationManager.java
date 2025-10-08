@@ -39,12 +39,13 @@ public class TicketCreationManager {
                     type = "CHEAP";
                     price = 50.0;
                 }
-
+                String place = String.valueOf(i);
                 Ticket ticket = new Ticket(
                         UUID.randomUUID(),
                         event,
                         type,
                         price,
+                        place,
                         TICKET_STATUS.AVAILABLE
                 );
 
