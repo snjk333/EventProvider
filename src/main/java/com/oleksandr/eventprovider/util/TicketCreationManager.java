@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class TicketCreationManager {
@@ -40,14 +39,13 @@ public class TicketCreationManager {
                     price = 50.0;
                 }
                 String place = String.valueOf(i);
-                Ticket ticket = new Ticket(
-                        UUID.randomUUID(),
-                        event,
-                        type,
-                        price,
-                        place,
-                        TICKET_STATUS.AVAILABLE
-                );
+                
+                Ticket ticket = new Ticket();
+                ticket.setEvent(event);
+                ticket.setType(type);
+                ticket.setPrice(price);
+                ticket.setPlace(place);
+                ticket.setStatus(TICKET_STATUS.AVAILABLE);
 
                 tickets.add(ticket);
             }

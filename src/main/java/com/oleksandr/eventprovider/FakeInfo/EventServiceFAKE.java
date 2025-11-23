@@ -4,6 +4,8 @@ import com.oleksandr.eventprovider.Event.*;
 import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import com.oleksandr.eventprovider.util.TicketCreationManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,5 +66,20 @@ public class EventServiceFAKE implements EventService {
         }
 
         return eventMapper.mapListToDtoList(clearEvents);
+    }
+
+    @Override
+    public Page<EventDTO> getAllEventsPaginated(boolean includeTickets, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public List<EventDTO> fetchAndSaveEventsFromApi() {
+        return List.of();
+    }
+
+    @Override
+    public void refreshEventsFromApi() {
+
     }
 }

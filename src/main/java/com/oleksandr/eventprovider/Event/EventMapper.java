@@ -2,11 +2,16 @@ package com.oleksandr.eventprovider.Event;
 
 import com.oleksandr.eventprovider.Ticket.Ticket;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
+import com.oleksandr.eventprovider.TicketMaster.dto.EventMasterDto;
+import com.oleksandr.eventprovider.TicketMaster.dto.ImageDto;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class EventMapper {
@@ -17,7 +22,6 @@ public class EventMapper {
         this.ticketMapper = ticketMapper;
     }
 
-    // DTO → Entity
     public Event mapToEntity(EventDTO dto) {
         if (dto == null) throw new IllegalArgumentException("EventDTO cannot be null");
 
@@ -34,13 +38,12 @@ public class EventMapper {
             tickets.forEach(t -> t.setEvent(event));
             event.setTickets(tickets);
         } else {
-            event.setTickets(List.of());
+            event.setTickets(new ArrayList<>());
         }
 
         return event;
     }
-
-    // PATCH-подход: частичное обновление
+    
     public Event updateEventInformation(Event eventToChange, EventDTO dto) {
         if (dto == null) return eventToChange;
 
@@ -51,7 +54,6 @@ public class EventMapper {
         if (dto.getEventDate() != null) eventToChange.setEventDate(dto.getEventDate());
 
         if (dto.getTickets() != null) {
-            // PATCH: обновляем существующие или добавляем новые тикеты
             List<Ticket> updatedTickets = ticketMapper.mapTicketsListFromDto(dto.getTickets());
             for (Ticket updated : updatedTickets) {
                 if (updated.getId() == null) {
@@ -117,4 +119,87 @@ public class EventMapper {
                 .tickets(new ArrayList<>())
                 .build();
     }
+
+    public EventDTO ticketmasterToInternalDto(EventMasterDto ticketmasterDto) {
+        if (ticketmasterDto == null) {
+            return null;
+        }
+
+        EventDTO internalDto = new EventDTO();
+
+        internalDto.setId(null);
+
+        internalDto.setName(ticketmasterDto.getName());
+
+        internalDto.setEventDate(parseEventDate(ticketmasterDto.getDates()));
+
+        internalDto.setImageURL(extractImageUrl(ticketmasterDto.getImages()));
+
+        // TODO: Location extraction requires venue data structure
+        internalDto.setLocation("TBD");
+        internalDto.setDescription(ticketmasterDto.getName() != null ? ticketmasterDto.getName() : "No description available.");
+
+
+        internalDto.setTickets(new ArrayList<>());
+
+        return internalDto;
+    }
+
+    public Event ticketmasterDtoToEvent(EventMasterDto ticketmasterDto) {
+        if (ticketmasterDto == null) {
+            return null;
+        }
+
+        EventDTO eventDto = ticketmasterToInternalDto(ticketmasterDto);
+
+        Event event = mapToEntity(eventDto);
+
+        event.setExternalId(ticketmasterDto.getId());
+        
+        return event;
+    }
+
+
+    private String extractImageUrl(List<ImageDto> images) {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+
+
+        Optional<ImageDto> preferredImage = images.stream()
+                .filter(img -> "16_9".equals(img.getRatio()) || "3_2".equals(img.getRatio()))
+                .max(Comparator.comparingInt(ImageDto::getWidth));
+
+        return preferredImage.map(ImageDto::getUrl).orElse(images.get(0).getUrl());
+    }
+
+
+    private LocalDateTime parseEventDate(com.oleksandr.eventprovider.TicketMaster.dto.DatesDto datesDto) {
+        if (datesDto == null || datesDto.getStart() == null) {
+            return null;
+        }
+
+        var start = datesDto.getStart();
+
+        if (start.getDateTime() != null) {
+            return start.getDateTime();
+        }
+
+        if (start.getLocalDate() != null) {
+            java.time.LocalDate date = java.time.LocalDate.parse(start.getLocalDate());
+            
+            if (start.getLocalTime() != null) {
+                java.time.LocalTime time = java.time.LocalTime.parse(start.getLocalTime());
+                return LocalDateTime.of(date, time);
+            } else {
+                return date.atStartOfDay();
+            }
+        }
+
+        return null;
+    }
+
+    // TODO: Implement extractLocation when venue DTOs are available
+    // Location extraction requires VenueDto and proper EventEmbedded structure
 }
+
