@@ -2,10 +2,10 @@ package com.oleksandr.eventprovider.Event;
 
 import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import jakarta.validation.Valid;
-import lombok.*;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

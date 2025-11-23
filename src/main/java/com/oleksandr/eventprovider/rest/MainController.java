@@ -1,9 +1,8 @@
 package com.oleksandr.eventprovider.rest;
 
 import com.oleksandr.eventprovider.Event.EventDTO;
-import com.oleksandr.eventprovider.Event.EventServiceReal;
-import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Event.EventService;
+import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;

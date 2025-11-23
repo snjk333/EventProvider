@@ -1,6 +1,9 @@
 package com.oleksandr.eventprovider.FakeInfo;
 
-import com.oleksandr.eventprovider.Event.*;
+import com.oleksandr.eventprovider.Event.Event;
+import com.oleksandr.eventprovider.Event.EventDTO;
+import com.oleksandr.eventprovider.Event.EventMapper;
+import com.oleksandr.eventprovider.Event.EventService;
 import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import com.oleksandr.eventprovider.util.TicketCreationManager;

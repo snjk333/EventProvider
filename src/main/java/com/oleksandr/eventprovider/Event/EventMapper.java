@@ -7,11 +7,7 @@ import com.oleksandr.eventprovider.TicketMaster.dto.ImageDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class EventMapper {
