@@ -125,15 +125,15 @@ public class EventMapper {
 
         internalDto.setId(null);
 
-        internalDto.setName(ticketmasterDto.getName());
+        internalDto.setName(ticketmasterDto.name());
 
-        internalDto.setEventDate(parseEventDate(ticketmasterDto.getDates()));
+        internalDto.setEventDate(parseEventDate(ticketmasterDto.dates()));
 
-        internalDto.setImageURL(extractImageUrl(ticketmasterDto.getImages()));
+        internalDto.setImageURL(extractImageUrl(ticketmasterDto.images()));
 
         // TODO: Location extraction requires venue data structure
         internalDto.setLocation("TBD");
-        internalDto.setDescription(ticketmasterDto.getName() != null ? ticketmasterDto.getName() : "No description available.");
+        internalDto.setDescription(ticketmasterDto.name() != null ? ticketmasterDto.name() : "No description available.");
 
 
         internalDto.setTickets(new ArrayList<>());
@@ -150,7 +150,7 @@ public class EventMapper {
 
         Event event = mapToEntity(eventDto);
 
-        event.setExternalId(ticketmasterDto.getId());
+        event.setExternalId(ticketmasterDto.id());
         
         return event;
     }
@@ -163,29 +163,29 @@ public class EventMapper {
 
 
         Optional<ImageDto> preferredImage = images.stream()
-                .filter(img -> "16_9".equals(img.getRatio()) || "3_2".equals(img.getRatio()))
-                .max(Comparator.comparingInt(ImageDto::getWidth));
+                .filter(img -> "16_9".equals(img.ratio()) || "3_2".equals(img.ratio()))
+                .max(Comparator.comparingInt(ImageDto::width));
 
-        return preferredImage.map(ImageDto::getUrl).orElse(images.get(0).getUrl());
+        return preferredImage.map(ImageDto::url).orElse(images.get(0).url());
     }
 
 
     private LocalDateTime parseEventDate(com.oleksandr.eventprovider.TicketMaster.dto.DatesDto datesDto) {
-        if (datesDto == null || datesDto.getStart() == null) {
+        if (datesDto == null || datesDto.start() == null) {
             return null;
         }
 
-        var start = datesDto.getStart();
+        var start = datesDto.start();
 
-        if (start.getDateTime() != null) {
-            return start.getDateTime();
+        if (start.dateTime() != null) {
+            return start.dateTime();
         }
 
-        if (start.getLocalDate() != null) {
-            java.time.LocalDate date = java.time.LocalDate.parse(start.getLocalDate());
+        if (start.localDate() != null) {
+            java.time.LocalDate date = java.time.LocalDate.parse(start.localDate());
             
-            if (start.getLocalTime() != null) {
-                java.time.LocalTime time = java.time.LocalTime.parse(start.getLocalTime());
+            if (start.localDate() != null) {
+                java.time.LocalTime time = java.time.LocalTime.parse(start.localDate());
                 return LocalDateTime.of(date, time);
             } else {
                 return date.atStartOfDay();
