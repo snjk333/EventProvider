@@ -18,7 +18,6 @@ public class TicketMapper {
         ticket.setPlace(dto.getPlace());
         ticket.setStatus(dto.getStatus() != null ? dto.getStatus() : TICKET_STATUS.AVAILABLE);
 
-        // eventId нужно установить в сервисе через репозиторий Event, если dto.getEventId() != null
         return ticket;
     }
 
