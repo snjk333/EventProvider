@@ -22,5 +22,4 @@ public interface EventService {
 
     void refreshEventsFromApi();
 
-    //EventDTO getEventById(UUID id, boolean includeTickets);
 }

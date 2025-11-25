@@ -7,25 +7,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class TicketDTO {
+public record TicketDTO(
+        UUID id,
 
-    private UUID id;
+        UUID eventId,
 
-    private UUID eventId;
+        @NotBlank String type,
 
-    @NotBlank
-    private String type;
+        @Min(0) double price,
 
-    @Min(0)
-    private double price;
+        String place,
 
-    private String place;
+        @NotNull TICKET_STATUS status) {}
 
-    @NotNull
-    private TICKET_STATUS status;
-}

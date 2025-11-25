@@ -1,13 +1,19 @@
 package com.oleksandr.eventprovider.Event;
 
 import com.oleksandr.eventprovider.Ticket.Ticket;
+import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import com.oleksandr.eventprovider.TicketMaster.dto.EventMasterDto;
 import com.oleksandr.eventprovider.TicketMaster.dto.ImageDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class EventMapper {
@@ -18,19 +24,20 @@ public class EventMapper {
         this.ticketMapper = ticketMapper;
     }
 
+    // DTO → Entity
     public Event mapToEntity(EventDTO dto) {
         if (dto == null) throw new IllegalArgumentException("EventDTO cannot be null");
 
         Event event = new Event();
-        event.setId(dto.getId());
-        event.setName(dto.getName());
-        event.setDescription(dto.getDescription());
-        event.setLocation(dto.getLocation());
-        event.setImageURL(dto.getImageURL());
-        event.setEventDate(dto.getEventDate());
+        event.setId(dto.id());
+        event.setName(dto.name());
+        event.setDescription(dto.description());
+        event.setLocation(dto.location());
+        event.setImageURL(dto.imageURL());
+        event.setEventDate(dto.eventDate());
 
-        if (dto.getTickets() != null) {
-            List<Ticket> tickets = ticketMapper.mapTicketsListFromDto(dto.getTickets());
+        if (dto.tickets() != null) {
+            List<Ticket> tickets = ticketMapper.mapTicketsListFromDto(dto.tickets());
             tickets.forEach(t -> t.setEvent(event));
             event.setTickets(tickets);
         } else {
@@ -43,14 +50,14 @@ public class EventMapper {
     public Event updateEventInformation(Event eventToChange, EventDTO dto) {
         if (dto == null) return eventToChange;
 
-        if (dto.getName() != null) eventToChange.setName(dto.getName());
-        if (dto.getDescription() != null) eventToChange.setDescription(dto.getDescription());
-        if (dto.getLocation() != null) eventToChange.setLocation(dto.getLocation());
-        if (dto.getImageURL() != null) eventToChange.setImageURL(dto.getImageURL());
-        if (dto.getEventDate() != null) eventToChange.setEventDate(dto.getEventDate());
+        if (dto.name() != null) eventToChange.setName(dto.name());
+        if (dto.description() != null) eventToChange.setDescription(dto.description());
+        if (dto.location() != null) eventToChange.setLocation(dto.location());
+        if (dto.imageURL() != null) eventToChange.setImageURL(dto.imageURL());
+        if (dto.eventDate() != null) eventToChange.setEventDate(dto.eventDate());
 
-        if (dto.getTickets() != null) {
-            List<Ticket> updatedTickets = ticketMapper.mapTicketsListFromDto(dto.getTickets());
+        if (dto.tickets() != null) {
+            List<Ticket> updatedTickets = ticketMapper.mapTicketsListFromDto(dto.tickets());
             for (Ticket updated : updatedTickets) {
                 if (updated.getId() == null) {
                     updated.setEvent(eventToChange);
@@ -120,27 +127,30 @@ public class EventMapper {
         if (ticketmasterDto == null) {
             return null;
         }
+        LocalDateTime eventDate;
+        if (ticketmasterDto.dates() != null &&
+                ticketmasterDto.dates().start() != null &&
+                ticketmasterDto.dates().start().dateTime() != null) {
+            eventDate = ticketmasterDto.dates().start().dateTime();
+        } else {
+            eventDate = null;
+        }
+        String location = "TBD";
+        String description = ticketmasterDto.name() != null ? ticketmasterDto.name() : "No description available.";
+        List<TicketDTO> tickets = new ArrayList<>();
 
-        EventDTO internalDto = new EventDTO();
-
-        internalDto.setId(null);
-
-        internalDto.setName(ticketmasterDto.name());
-
-        internalDto.setEventDate(parseEventDate(ticketmasterDto.dates()));
-
-        internalDto.setImageURL(extractImageUrl(ticketmasterDto.images()));
-
-        // TODO: Location extraction requires venue data structure
-        internalDto.setLocation("TBD");
-        internalDto.setDescription(ticketmasterDto.name() != null ? ticketmasterDto.name() : "No description available.");
-
-
-        internalDto.setTickets(new ArrayList<>());
+        EventDTO internalDto = new EventDTO(
+                UUID.randomUUID(),
+                ticketmasterDto.name(),
+                description,
+                location,
+                extractImageUrl(ticketmasterDto.images()),
+                eventDate,
+                tickets
+        );
 
         return internalDto;
     }
-
     public Event ticketmasterDtoToEvent(EventMasterDto ticketmasterDto) {
         if (ticketmasterDto == null) {
             return null;
@@ -148,11 +158,7 @@ public class EventMapper {
 
         EventDTO eventDto = ticketmasterToInternalDto(ticketmasterDto);
 
-        Event event = mapToEntity(eventDto);
-
-        event.setExternalId(ticketmasterDto.id());
-        
-        return event;
+        return mapToEntity(eventDto);
     }
 
 
@@ -161,7 +167,6 @@ public class EventMapper {
             return null;
         }
 
-
         Optional<ImageDto> preferredImage = images.stream()
                 .filter(img -> "16_9".equals(img.ratio()) || "3_2".equals(img.ratio()))
                 .max(Comparator.comparingInt(ImageDto::width));
@@ -169,33 +174,6 @@ public class EventMapper {
         return preferredImage.map(ImageDto::url).orElse(images.get(0).url());
     }
 
-
-    private LocalDateTime parseEventDate(com.oleksandr.eventprovider.TicketMaster.dto.DatesDto datesDto) {
-        if (datesDto == null || datesDto.start() == null) {
-            return null;
-        }
-
-        var start = datesDto.start();
-
-        if (start.dateTime() != null) {
-            return start.dateTime();
-        }
-
-        if (start.localDate() != null) {
-            java.time.LocalDate date = java.time.LocalDate.parse(start.localDate());
-            
-            if (start.localDate() != null) {
-                java.time.LocalTime time = java.time.LocalTime.parse(start.localDate());
-                return LocalDateTime.of(date, time);
-            } else {
-                return date.atStartOfDay();
-            }
-        }
-
-        return null;
-    }
-
     // TODO: Implement extractLocation when venue DTOs are available
     // Location extraction requires VenueDto and proper EventEmbedded structure
 }
-

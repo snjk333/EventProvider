@@ -25,11 +25,11 @@ public class EventProviderService {
     public List<Event> getRealEvents() {
 
         TicketmasterResponse response = client.fetchEvents("PL").block();
-        if (response == null || response.getEmbedded() == null) {
+        if (response == null || response.embedded() == null) {
             return Collections.emptyList();
         }
 
-        return response.getEmbedded().getEvents().stream()
+        return response.embedded().events().stream()
                 .map(mapper::ticketmasterDtoToEvent)
                 .collect(Collectors.toList());
     }

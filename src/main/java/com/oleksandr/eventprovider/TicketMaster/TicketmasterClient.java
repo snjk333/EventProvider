@@ -1,12 +1,12 @@
 package com.oleksandr.eventprovider.TicketMaster;
 
 import com.oleksandr.eventprovider.TicketMaster.dto.TicketmasterResponse;
+import com.oleksandr.eventprovider.exception.TicketmasterApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -26,16 +26,7 @@ public class TicketmasterClient {
                               @Value("${ticketmaster.api.baseurl}") String baseUrl,
                               @Value("${ticketmaster.api.key}") String apiKey) {
 
-        ExchangeStrategies strategies = ExchangeStrategies.builder()
-                .codecs(configurer -> configurer
-                        .defaultCodecs()
-                        .maxInMemorySize(10 * 1024 * 1024)) // 10MB
-                .build();
-
-        this.webClient = webClientBuilder
-                .baseUrl(baseUrl)
-                .exchangeStrategies(strategies)
-                .build();
+        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
         this.apiKey = apiKey;
     }
 
@@ -94,7 +85,7 @@ public class TicketmasterClient {
     private Mono<TicketmasterResponse> handleFallback(Throwable error) {
         logger.error("Fallback triggered for Ticketmaster API. Returning empty response. Error: {}", error.getMessage());
 
-        TicketmasterResponse emptyResponse = new TicketmasterResponse();
+        TicketmasterResponse emptyResponse = new TicketmasterResponse(null);
         return Mono.just(emptyResponse);
     }
 }

@@ -10,29 +10,27 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class EventDTO {
+public record EventDTO(
 
-    private UUID id;
+        UUID id,
 
-    @NotBlank(message = "Event name cannot be blank")
-    private String name;
+        @NotBlank(message = "Event name cannot be blank")
+        String name,
 
-    @NotBlank(message = "Event description cannot be blank")
-    private String description;
+        @NotBlank(message = "Event description cannot be blank")
+        String description,
 
-    @NotBlank(message = "Event location cannot be blank")
-    private String location;
+        @NotBlank(message = "Event location cannot be blank")
+        String location,
 
-    private String imageURL;
+        String imageURL,
 
-    @NotNull(message = "Event date cannot be null")
-    private LocalDateTime eventDate;
+        @NotNull(message = "Event date cannot be null")
+        LocalDateTime eventDate,
 
-    @Valid
-    private List<TicketDTO> tickets;
-}
+        @Valid
+        List<TicketDTO> tickets
+){}
+
+

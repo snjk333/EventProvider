@@ -12,11 +12,11 @@ public class TicketMapper {
     public Ticket mapToEntity(TicketDTO dto) {
         if (dto == null) throw new IllegalArgumentException("TicketDTO cannot be null");
         Ticket ticket = new Ticket();
-        ticket.setId(dto.getId());
-        ticket.setType(dto.getType());
-        ticket.setPrice(dto.getPrice());
-        ticket.setPlace(dto.getPlace());
-        ticket.setStatus(dto.getStatus() != null ? dto.getStatus() : TICKET_STATUS.AVAILABLE);
+        ticket.setId(dto.id());
+        ticket.setType(dto.type());
+        ticket.setPrice(dto.price());
+        ticket.setPlace(dto.place());
+        ticket.setStatus(dto.status() != null ? dto.status() : TICKET_STATUS.AVAILABLE);
 
         return ticket;
     }

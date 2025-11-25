@@ -8,4 +8,7 @@ public class TicketmasterApiException extends RuntimeException {
     public TicketmasterApiException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public TicketmasterApiException(String s, int value, String errorBody) {
+    }
 }

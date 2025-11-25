@@ -7,6 +7,7 @@ import com.oleksandr.eventprovider.Event.EventService;
 import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import com.oleksandr.eventprovider.util.TicketCreationManager;
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -73,16 +74,16 @@ public class EventServiceFAKE implements EventService {
 
     @Override
     public Page<EventDTO> getAllEventsPaginated(boolean includeTickets, Pageable pageable) {
-        return null;
+        throw new UnsupportedOperationException("Fake class not support this operation.");
     }
 
     @Override
     public List<EventDTO> fetchAndSaveEventsFromApi() {
-        return List.of();
+        throw new UnsupportedOperationException("Fake class not support this operation.");
     }
 
     @Override
     public void refreshEventsFromApi() {
-
+        throw new UnsupportedOperationException("Fake class not support this operation.");
     }
 }
