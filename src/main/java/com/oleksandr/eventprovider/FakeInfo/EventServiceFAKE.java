@@ -7,7 +7,6 @@ import com.oleksandr.eventprovider.Event.EventService;
 import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import com.oleksandr.eventprovider.util.TicketCreationManager;
-import jdk.jshell.spi.ExecutionControl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

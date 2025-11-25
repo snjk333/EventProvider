@@ -1,19 +1,13 @@
 package com.oleksandr.eventprovider.Event;
 
 import com.oleksandr.eventprovider.Ticket.Ticket;
-import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Ticket.TicketMapper;
 import com.oleksandr.eventprovider.TicketMaster.dto.EventMasterDto;
 import com.oleksandr.eventprovider.TicketMaster.dto.ImageDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class EventMapper {
@@ -123,7 +117,7 @@ public class EventMapper {
                 .build();
     }
 
-    public EventDTO ticketmasterToInternalDto(EventMasterDto ticketmasterDto) {
+    public Event ticketmasterDtoToEvent(EventMasterDto ticketmasterDto) {
         if (ticketmasterDto == null) {
             return null;
         }
@@ -137,29 +131,20 @@ public class EventMapper {
         }
         String location = "TBD";
         String description = ticketmasterDto.name() != null ? ticketmasterDto.name() : "No description available.";
-        List<TicketDTO> tickets = new ArrayList<>();
+        List<Ticket> tickets = new ArrayList<>();
 
-        EventDTO internalDto = new EventDTO(
-                UUID.randomUUID(),
-                ticketmasterDto.name(),
-                description,
-                location,
-                extractImageUrl(ticketmasterDto.images()),
-                eventDate,
-                tickets
-        );
 
-        return internalDto;
+        return Event.builder()
+                .name(ticketmasterDto.name())
+                .description(description)
+                .eventDate(eventDate)
+                .location(location)
+                .tickets(tickets)
+                .externalId(ticketmasterDto.id())
+                .imageURL(extractImageUrl(ticketmasterDto.images()))
+                .build();
     }
-    public Event ticketmasterDtoToEvent(EventMasterDto ticketmasterDto) {
-        if (ticketmasterDto == null) {
-            return null;
-        }
 
-        EventDTO eventDto = ticketmasterToInternalDto(ticketmasterDto);
-
-        return mapToEntity(eventDto);
-    }
 
 
     private String extractImageUrl(List<ImageDto> images) {

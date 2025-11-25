@@ -1,14 +1,17 @@
 package com.oleksandr.eventprovider.exception;
 
+import lombok.Getter;
+
+@Getter
 public class TicketmasterApiException extends RuntimeException {
-    public TicketmasterApiException(String message) {
+
+    private final int statusCode;
+    private final String responseBody;
+
+    public TicketmasterApiException(String message, int statusCode, String responseBody) {
         super(message);
+        this.statusCode = statusCode;
+        this.responseBody = responseBody;
     }
 
-    public TicketmasterApiException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public TicketmasterApiException(String s, int value, String errorBody) {
-    }
 }

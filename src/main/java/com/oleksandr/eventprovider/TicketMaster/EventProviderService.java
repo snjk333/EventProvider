@@ -15,6 +15,7 @@ public class EventProviderService {
 
     private final TicketmasterClient client;
     private final EventMapper mapper;
+    private final String COUNTRY_CODE = "PL";
 
     @Autowired
     public EventProviderService(TicketmasterClient client, EventMapper mapper) {
@@ -24,7 +25,7 @@ public class EventProviderService {
 
     public List<Event> getRealEvents() {
 
-        TicketmasterResponse response = client.fetchEvents("PL").block();
+        TicketmasterResponse response = client.fetchEvents(COUNTRY_CODE).block();
         if (response == null || response.embedded() == null) {
             return Collections.emptyList();
         }

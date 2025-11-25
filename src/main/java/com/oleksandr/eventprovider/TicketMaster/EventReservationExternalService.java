@@ -22,8 +22,7 @@ public class EventReservationExternalService {
 
     private final WebClient webClient;
 
-    public EventReservationExternalService(TicketRepository ticketRepository,
-                                           WebClient.Builder builder) {
+    public EventReservationExternalService(TicketRepository ticketRepository, WebClient.Builder builder) {
         this.ticketRepository = ticketRepository;
         this.webClient = builder.baseUrl(ExternalServiceUrl).build();
     }
