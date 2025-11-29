@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public class TicketmasterApiException extends RuntimeException {
 
-    private final int statusCode;
-    private final String responseBody;
+    private int statusCode;
+    private String responseBody;
 
     public TicketmasterApiException(String message, int statusCode, String responseBody) {
         super(message);
@@ -14,4 +14,11 @@ public class TicketmasterApiException extends RuntimeException {
         this.responseBody = responseBody;
     }
 
+    public TicketmasterApiException(String ticketmasterApiReturnedEmptyResponse) {
+        super(ticketmasterApiReturnedEmptyResponse);
+    }
+
+    public TicketmasterApiException(String s, Exception e) {
+        super(s, e);
+    }
 }
