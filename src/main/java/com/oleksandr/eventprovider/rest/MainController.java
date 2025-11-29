@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/external")
-@Validated // ВАЖНО: Включает проверку аннотаций @Min/@Max
+@Validated
 public class MainController {
 
     private final EventService eventService;
