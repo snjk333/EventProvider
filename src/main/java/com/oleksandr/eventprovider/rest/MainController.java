@@ -1,13 +1,16 @@
 package com.oleksandr.eventprovider.rest;
 
 import com.oleksandr.eventprovider.Event.EventDTO;
-import com.oleksandr.eventprovider.Event.EventServiceReal;
-import com.oleksandr.eventprovider.Ticket.TicketDTO;
 import com.oleksandr.eventprovider.Event.EventService;
+import com.oleksandr.eventprovider.Ticket.TicketDTO;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/external")
+@Validated // ВАЖНО: Включает проверку аннотаций @Min/@Max
 public class MainController {
 
     private final EventService eventService;
@@ -26,31 +30,32 @@ public class MainController {
     }
 
     @GetMapping("/events")
-    public Map<String, Object> getAllEvents(
+    public Page<EventDTO> getAllEvents(
             @RequestParam(value = "includeTickets", defaultValue = "false") boolean includeTickets,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+
+            @RequestParam(value = "page", defaultValue = "0")
+            @Min(value = 0, message = "Page number cannot be negative")
+            int page,
+
+            @RequestParam(value = "size", defaultValue = "10")
+            @Min(value = 1, message = "Page size must be at least 1")
+            @Max(value = 100, message = "Page size cannot exceed 100")
+            int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<EventDTO> eventPage = eventService.getAllEventsPaginated(includeTickets, pageable);
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("events", eventPage.getContent());
-        response.put("currentPage", eventPage.getNumber());
-        response.put("totalItems", eventPage.getTotalElements());
-        response.put("totalPages", eventPage.getTotalPages());
-        
-        return response;
+        Sort sort = Sort.by(Sort.Direction.ASC, "eventDate");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return eventService.getAllEventsPaginated(includeTickets, pageable);
     }
 
     @PostMapping("/events/refresh")
     public ResponseEntity<Map<String, String>> refreshEventsFromApi() {
         eventService.refreshEventsFromApi();
-        
+
         Map<String, String> response = new HashMap<>();
         response.put("message", "Events successfully refreshed from Ticketmaster API");
         response.put("status", "success");
-        
+
         return ResponseEntity.ok(response);
     }
 
