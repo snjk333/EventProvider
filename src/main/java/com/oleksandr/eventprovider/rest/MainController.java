@@ -20,11 +20,9 @@ import java.util.UUID;
 public class MainController {
 
     private final EventService eventService;
-    private final EventServiceReal eventServiceReal;
 
-    public MainController(EventService eventService, EventServiceReal eventServiceReal) {
+    public MainController(EventService eventService) {
         this.eventService = eventService;
-        this.eventServiceReal = eventServiceReal;
     }
 
     @GetMapping("/events")
@@ -34,7 +32,7 @@ public class MainController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<EventDTO> eventPage = eventServiceReal.getAllEventsPaginated(includeTickets, pageable);
+        Page<EventDTO> eventPage = eventService.getAllEventsPaginated(includeTickets, pageable);
         
         Map<String, Object> response = new HashMap<>();
         response.put("events", eventPage.getContent());
@@ -47,7 +45,7 @@ public class MainController {
 
     @PostMapping("/events/refresh")
     public ResponseEntity<Map<String, String>> refreshEventsFromApi() {
-        eventServiceReal.refreshEventsFromApi();
+        eventService.refreshEventsFromApi();
         
         Map<String, String> response = new HashMap<>();
         response.put("message", "Events successfully refreshed from Ticketmaster API");
